@@ -2,10 +2,21 @@ import styles from './app.module.scss';
 import NxWelcome from './nx-welcome';
 
 import { Route, Link } from 'react-router-dom';
-import News from './news/news';
+import News, { PeaceOfNews } from './news/news';
 import CreateNews from './create-news/create-news';
+import { createContext, useEffect, useState } from 'react';
+
+export const NewsContext = createContext([] as PeaceOfNews[]);
 
 export function App() {
+  const [news, setNews] = useState([] as PeaceOfNews[]);
+
+  useEffect(() => {
+    fetch('http://localhost:3333/api/news')
+      .then(response => response.json())
+      .then(news => setNews(news));
+  }, []);
+
   return (
     <>
       {/*<NxWelcome title="web" />*/}
@@ -38,7 +49,9 @@ export function App() {
         path="/news"
         exact
         render={() => (
-          <News />
+          <NewsContext.Provider value={news}>
+            <News />
+          </NewsContext.Provider>
         )}
       />
       <Route
